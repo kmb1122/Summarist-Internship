@@ -13,13 +13,13 @@ export default function WithAudioLayout({ children }: { children: React.ReactNod
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [search, setSearch] = useState("");
-  const [loginOrigin, setLoginOrigin] = useState(null);
+  const [loginOrigin, setLoginOrigin] = useState<string | null>(null);
 
   return (
     <AudioProvider>
       <div className={styles.shell}>
         <div className={styles.sidebarDesktop}>
-          <Sidebar onLoginClick={(origin) => {
+          <Sidebar onLoginClick={(origin: string) => {
             setLoginOrigin(origin);
             setShowLogin(true);
           }} />
@@ -30,7 +30,7 @@ export default function WithAudioLayout({ children }: { children: React.ReactNod
             mobileOpen ? styles.sidebarMobileOpen : ""
           }`}
         >
-          <Sidebar onLoginClick={(origin) => {
+          <Sidebar onLoginClick={(origin: string) => {
             setLoginOrigin(origin);
             setShowLogin(true);
           }} />

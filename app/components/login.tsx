@@ -16,7 +16,6 @@ import {
 } from "firebase/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 
 export default function Login({ onClose, origin }) {
   const [email, setEmail] = useState("");
