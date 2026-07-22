@@ -9,7 +9,7 @@ import styles from "./layout.module.css";
 import { AudioProvider } from "../context/audioContext";
 import Results from "../components/results";
 
-export default function WithAudioLayout({ children }) {
+export default function WithAudioLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [search, setSearch] = useState("");
