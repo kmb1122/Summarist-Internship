@@ -14,7 +14,11 @@ import { auth } from "../firebase";
 import { useAudio } from "../context/audioContext";
 import { PiTextAa } from "react-icons/pi";
 
-export default function Sidebar({ onLoginClick }) {
+interface SidebarProps {
+  onLoginClick: (origin: string) => void;
+}
+
+export default function Sidebar({ onLoginClick }: SidebarProps) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
     const isGuest = useSelector((state) => state.auth.isGuest);
