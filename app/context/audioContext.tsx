@@ -2,19 +2,24 @@
 
 import { createContext, useContext, useState } from "react";
 
-const AudioContext = createContext(null);
+interface AudioContextType {
+  book: any | null;
+  summaryFontSize: number;
+  setSummaryFontSize: (size: number) => void;
+}
 
-export function AudioProvider({ children }) {
-  const [book, setBook] = useState(null);
-  const [summaryFontSize, setSummaryFontSize] = useState("16px");
+const AudioContext = createContext<AudioContextType>({
+  book: null,
+  summaryFontSize: 16,
+  setSummaryFontSize: () => {},
+});
+
+export function AudioProvider({ children }: { children: React.ReactNode }) {
+  const [book, setBook] = useState<any | null>(null);
+  const [summaryFontSize, setSummaryFontSize] = useState(16);
 
   return (
-    <AudioContext.Provider value={{
-      book,
-      setBook,
-      summaryFontSize,
-      setSummaryFontSize
-    }}>
+    <AudioContext.Provider value={{ book, summaryFontSize, setSummaryFontSize }}>
       {children}
     </AudioContext.Provider>
   );
