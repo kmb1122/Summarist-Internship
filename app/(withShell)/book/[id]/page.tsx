@@ -1,5 +1,17 @@
 "use client";
 
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  subTitle: string;
+  summary: string;
+  imageLink: string;
+  audioLink: string;
+  averageRating: number;
+  subscriptionRequired: boolean;
+}
+
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { PiStar, PiClock } from "react-icons/pi";
@@ -17,7 +29,7 @@ import { updateLibrarySaved } from "@/app/redux/authSlice";
 export default function Book() {
   const params = useParams();
   const id = params.id as string;
-  const [book, setBook] = useState(null);
+  const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [duration, setDuration] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
@@ -54,7 +66,7 @@ export default function Book() {
     async function loadDuration() {
       if (!book || !book.audioLink) return;
       const dur = await getAudioDuration(book.audioLink);
-      setDuration(dur);
+      setDuration(duration);
     }
 
     loadDuration();

@@ -6,11 +6,23 @@ import { LuLoaderCircle } from "react-icons/lu";
 import { useParams } from "next/navigation";
 import { useAudio } from "@/app/context/audioContext";
 
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  subTitle: string;
+  summary: string;
+  imageLink: string;
+  audioLink: string;
+  averageRating: number;
+  subscriptionRequired: boolean;
+}
+
 export default function Player() {
   const params = useParams();
   const id = params.id as string;
   const { summaryFontSize } = useAudio();
-  const [book, setBook] = useState(null);
+  const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
 
   const { setBook: setGlobalBook } = useAudio();
