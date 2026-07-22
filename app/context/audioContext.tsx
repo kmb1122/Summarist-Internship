@@ -4,12 +4,14 @@ import { createContext, useContext, useState } from "react";
 
 interface AudioContextType {
   book: any | null;
+  setBook: (book: any | null) => void;
   summaryFontSize: number;
   setSummaryFontSize: (size: number) => void;
 }
 
 const AudioContext = createContext<AudioContextType>({
   book: null,
+  setBook: () => {},
   summaryFontSize: 16,
   setSummaryFontSize: () => {},
 });
@@ -19,7 +21,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [summaryFontSize, setSummaryFontSize] = useState(16);
 
   return (
-    <AudioContext.Provider value={{ book, summaryFontSize, setSummaryFontSize }}>
+    <AudioContext.Provider value={{ book, setBook, summaryFontSize, setSummaryFontSize }}>
       {children}
     </AudioContext.Provider>
   );
