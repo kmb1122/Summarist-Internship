@@ -4,7 +4,13 @@ import styles from "./searchbar.module.css";
 import { AiOutlineSearch, AiOutlineClose } from "react-icons/ai";
 import { VscThreeBars } from "react-icons/vsc";
 
-export default function Searchbar({ onHamburgerClick, onSearch, search }) {
+interface SearchbarProps {
+  onSearch: (value: string) => void;
+  onHamburgerClick: () => void;
+  search: string;
+}
+
+export default function Searchbar({ onSearch, onHamburgerClick, search }: SearchbarProps) {
   return (
     <>
       <div className={styles.searchbar}>
