@@ -16,8 +16,10 @@ import {
 } from "firebase/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { User } from "firebase/auth";
 
-export default function Login({ onClose, origin }) {
+
+export default function Login({ onClose, origin }: { onClose: () => void, origin: string | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,23 +31,23 @@ export default function Login({ onClose, origin }) {
   const router = useRouter();
   const provider = new GoogleAuthProvider();
 
-  async function ensureUserDocument(user) {
-    if (user.uid === "guest") return;
+async function ensureUserDocument(user: User) {
+  if (user.uid === "guest") return;
 
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
 
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        email: user.email,
-        subscriptionPlan: "Basic",
-        librarySaved: [],
-        libraryFinished: []
-      });
-    }
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      email: user.email,
+      subscriptionPlan: "Basic",
+      librarySaved: [],
+      libraryFinished: []
+    });
   }
+}
 
-  const handleOverlayClick = (e) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }

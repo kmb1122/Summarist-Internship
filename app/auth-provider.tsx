@@ -1,5 +1,9 @@
 "use client";
 
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser, clearUser } from "./redux/authSlice";
@@ -7,7 +11,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
-export function AuthProvider({ children }) {
+export function AuthProvider({ children }: AuthProviderProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -1,15 +1,14 @@
 "use client";
 
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/app/redux/hooks";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Login from "../../components/login";
 import styles from "./page.module.css";
 
 export default function Settings() {
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const [showLogin, setShowLogin] = useState(false);
-  const plan = useSelector((state) => state.auth.plan);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,7 +52,7 @@ export default function Settings() {
                 <p className={styles.settings__p}>
                   {user?.subscriptionPlan}
                 </p>
-                {plan === "Basic" && (
+                {user?.subscriptionPlan === "Basic" && (
                   <Link href="/choose-plan">
                     <button className={`btn ${styles.upgrade__btn}`}>
                       Upgrade to Premium
@@ -84,7 +83,12 @@ export default function Settings() {
                   Login
                 </button>
               </div>
-              {showLogin && <Login onClose={() => setShowLogin(false)} />}
+              {showLogin && (
+                <Login
+                  onClose={() => setShowLogin(false)}
+                  origin="/settings"
+                />
+              )}
             </>
           )}
         </div>

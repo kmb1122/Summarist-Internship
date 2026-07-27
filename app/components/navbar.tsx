@@ -1,7 +1,11 @@
+interface NavbarProps {
+  onLoginClick: (origin: string) => void;
+}
+
 import styles from "./navbar.module.css";
 import Link from "next/link";
 
-export default function Navbar({ onLoginClick }) {
+export default function Navbar({ onLoginClick }: NavbarProps) {
 
     return (
         <nav className={styles.nav}>

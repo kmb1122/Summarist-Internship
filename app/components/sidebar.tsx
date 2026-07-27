@@ -1,7 +1,8 @@
 "use client";
 
+import { useAppSelector } from "../redux/hooks";
 import { usePathname } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearUser } from "../redux/authSlice";
 import styles from "./sidebar.module.css";
 import Link from "next/link";
@@ -20,21 +21,16 @@ interface SidebarProps {
 
 export default function Sidebar({ onLoginClick }: SidebarProps) {
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.auth.user);
-    const isGuest = useSelector((state) => state.auth.isGuest);
-    const isLoggedIn = Boolean(user) || isGuest;
+    const user = useAppSelector((state) => state.auth.user);
+    const isLoggedIn = Boolean(user);
     const pathname = usePathname();
-    const sidebarOpen = useSelector((state) => state.ui.sidebarOpen);
+    const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
     const audio = useAudio();
     const summaryFontSize = audio?.summaryFontSize;
     const setSummaryFontSize = audio?.setSummaryFontSize;
+    const isPlayerPage = pathname.startsWith("/player/");
 
     const handleLogout = async () => {
-        if (isGuest) {
-            dispatch(clearUser());
-            return;
-        }
-
         await signOut(auth);
         dispatch(clearUser());
         };
@@ -77,7 +73,7 @@ export default function Sidebar({ onLoginClick }: SidebarProps) {
                             <AiOutlineSearch className={styles.side__icon}/>
                             <p className={styles.item__name}>Search</p>
                         </li>
-                        {audio && (
+                        {isPlayerPage && (
                             <li className={styles.fontSizeController}>
                                 <div className={styles.fontSizeOptions}>
                                     <button

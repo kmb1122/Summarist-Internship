@@ -13,7 +13,7 @@ import Footer from "./components/footer";
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
-  const [loginOrigin, setLoginOrigin] = useState(null);
+  const [loginOrigin, setLoginOrigin] = useState<string | null>(null);
 
   const statsSet1 = [
     "Enhance your knowledge",
@@ -231,7 +231,15 @@ export default function Home() {
               </div>
             </div>
             <div className={styles.reviews__btnWrapper}>
-              <button className={`btn ${styles.home__ctaBtn}`}>Login</button>
+              <button 
+                className={`btn ${styles.home__ctaBtn}`}
+                onClick={() => {
+                  setLoginOrigin("/");
+                  setShowLogin(true);
+                }}
+              >
+                Login
+              </button>
             </div>
           </div>
         </div>

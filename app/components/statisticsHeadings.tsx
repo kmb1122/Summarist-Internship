@@ -1,9 +1,13 @@
 "use client";
 
+interface StatisticsHeadingsProps {
+  items: string[];
+}
+
 import { useEffect, useState } from "react";
 import styles from "./statistics.module.css";
 
-export default function StatisticsHeadings({ items }) {
+export default function StatisticsHeadings({ items }: StatisticsHeadingsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {

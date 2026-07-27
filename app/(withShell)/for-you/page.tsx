@@ -1,22 +1,35 @@
 "use client";
 
-import { useSelector } from "react-redux";
+interface Book {
+  id: string;
+  type: string;
+  title: string;
+  author: string;
+  subTitle: string;
+  imageLink: string;
+  audioLink: string;
+  averageRating: number;
+  subscriptionRequired: boolean;
+  duration: number;
+}
+
+import { useAppSelector } from "@/app/redux/hooks";
 import styles from "./page.module.css";
 import { PiPlayCircleFill, PiClockBold, PiStarBold } from "react-icons/pi";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function ForYou() {
-  const user = useSelector((state) => state.auth.user);
-  const [selectedBooks, setSelectedBooks] = useState([]);
-  const [recommendedBooks, setRecommendedBooks] = useState([]);
-  const [suggestedBooks, setSuggestedBooks] = useState([]);
+  const user = useAppSelector((state) => state.auth.user);
+  const [selectedBooks, setSelectedBooks] = useState<Book[]>([]);
+  const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
+  const [suggestedBooks, setSuggestedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImageLoaded, setSelectedImageLoaded] = useState(false);
-  const [recommendedImageLoaded, setRecommendedImageLoaded] = useState({});
-  const [suggestedImageLoaded, setSuggestedImageLoaded] = useState({});
+  const [recommendedImageLoaded, setRecommendedImageLoaded] = useState<Record<string, boolean>>({});
+  const [suggestedImageLoaded, setSuggestedImageLoaded] = useState<Record<string, boolean>>({});
 
-  async function getAudioDuration(url) {
+  async function getAudioDuration(url: string) {
     return new Promise((resolve) => {
       const audio = document.createElement("audio");
       audio.src = url;
@@ -47,7 +60,7 @@ export default function ForYou() {
     const suggestedData = await suggestedRes.json();
 
     const selectedWithDuration = await Promise.all(
-      selectedData.map(async (book) => {
+      selectedData.map(async (book: Book) => {
         if (!book.audioLink) return { ...book, duration: 0 };
         return {
           ...book,
@@ -57,7 +70,7 @@ export default function ForYou() {
     );
 
     const recommendedWithDuration = await Promise.all(
-      recommendedData.map(async (book) => {
+      recommendedData.map(async (book: Book) => {
         if (!book.audioLink) return { ...book, duration: 0 };
         return {
           ...book,
@@ -67,7 +80,7 @@ export default function ForYou() {
     );
 
     const suggestedWithDuration = await Promise.all(
-      suggestedData.map(async (book) => {
+      suggestedData.map(async (book: Book) => {
         if (!book.audioLink) return { ...book, duration: 0 };
         return {
           ...book,
@@ -91,28 +104,30 @@ export default function ForYou() {
       `.${styles.recommended__wrapper}, .${styles.suggested__wrapper}`
     );
 
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      (e.currentTarget as HTMLDivElement).scrollLeft += e.deltaY;
+    };
+
     wrappers.forEach((wrapper) => {
-      wrapper.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        wrapper.scrollLeft += e.deltaY;
-      });
+      (wrapper as HTMLDivElement).addEventListener("wheel", handleWheel);
     });
 
     return () => {
       wrappers.forEach((wrapper) => {
-        wrapper.removeEventListener("wheel", () => {});
+        (wrapper as HTMLDivElement).removeEventListener("wheel", handleWheel);
       });
     };
   }, []);
 
-  const formatTime = (sec) => {
+  const formatTime = (sec: number) => {
     if (!sec || isNaN(sec)) return "00:00";
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
-  const formatMinutesSeconds = (sec) => {
+  const formatMinutesSeconds = (sec: number) => {
     if (!sec || isNaN(sec)) return "0 min 0 sec";
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);

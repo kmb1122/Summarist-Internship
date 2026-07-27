@@ -1,14 +1,25 @@
 "use client";
 
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  subTitle: string;
+  imageLink: string;
+  audioLink: string;
+  averageRating: number;
+  subscriptionRequired: boolean;
+}
+
 import styles from "./results.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { PiClockBold } from "react-icons/pi";
 
-export default function Results({ search }) {
+export default function Results({ search }: {search: string}) {
   const [loading, setLoading] = useState(false);
-  const [books, setBooks] = useState([]);
-  const [durations, setDurations] = useState({});
+  const [books, setBooks] = useState<Book[]>([]);
+  const [durations, setDurations] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!search || search.trim() === "") {
@@ -26,9 +37,9 @@ export default function Results({ search }) {
           { signal: controller.signal }
         );
 
-        const data = await res.json();
-        setBooks(data);
-      } catch (err) {
+    const data: Book[] = await res.json();
+    setBooks(data);
+      } catch (err: any) {
         if (err.name !== "AbortError") console.error(err);
       } finally {
         setLoading(false);
@@ -43,7 +54,7 @@ export default function Results({ search }) {
 
   useEffect(() => {
     async function loadDurations() {
-      const map = {};
+      const map: Record<string, number> = {};
 
       await Promise.all(
         books.map(async (book) => {
@@ -60,8 +71,8 @@ export default function Results({ search }) {
     }
   }, [books]);
 
-  async function getAudioDuration(url) {
-    return new Promise((resolve) => {
+  async function getAudioDuration(url: string) {
+    return new Promise<number>((resolve) => {
       const audio = document.createElement("audio");
       audio.src = url;
       audio.preload = "metadata";  
@@ -74,7 +85,7 @@ export default function Results({ search }) {
     });
   }
 
-  const formatTime = (sec) => {
+  const formatTime = (sec: number) => {
     if (!sec || isNaN(sec)) return "00:00";
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);

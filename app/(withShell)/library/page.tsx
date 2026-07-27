@@ -1,6 +1,19 @@
 "use client";
 
-import { useSelector } from "react-redux";
+interface Book {
+  id: string;
+  type: string;
+  title: string;
+  author: string;
+  subTitle: string;
+  imageLink: string;
+  audioLink: string;
+  averageRating: number;
+  subscriptionRequired: boolean;
+  duration: number;
+}
+
+import { useAppSelector } from "@/app/redux/hooks";
 import { useState, useEffect } from "react";
 import { PiClockBold, PiStarBold } from "react-icons/pi";
 import styles from "./page.module.css";
@@ -8,17 +21,17 @@ import Link from "next/link";
 import Login from "../../components/login";
 
 export default function Library() {
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const librarySaved = user?.librarySaved || [];
   const libraryFinished = user?.libraryFinished || [];
   const [loading, setLoading] = useState(true);
-  const [savedImageLoaded, setSavedImageLoaded] = useState({});
-  const [finishedImageLoaded, setFinishedImageLoaded] = useState({});
+  const [savedImageLoaded, setSavedImageLoaded] = useState<Record<string, boolean>>({});
+  const [finishedImageLoaded, setFinishedImageLoaded] = useState<Record<string, boolean>>({});
   const [showLogin, setShowLogin] = useState(false);
-  const [savedBooks, setSavedBooks] = useState([]);
-  const [finishedBooks, setFinishedBooks] = useState([]);
+  const [savedBooks, setSavedBooks] = useState<Book[]>([]);
+  const [finishedBooks, setFinishedBooks] = useState<Book[]>([]);
 
-  async function getAudioDuration(url) {
+  async function getAudioDuration(url: string) {
     return new Promise((resolve) => {
       const audio = document.createElement("audio");
       audio.src = url;
@@ -60,7 +73,7 @@ export default function Library() {
     }
   }, [librarySaved, libraryFinished]);
 
-  const formatTime = (sec) => {
+  const formatTime = (sec: number) => {
     if (!sec || isNaN(sec)) return "00:00";
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
@@ -72,16 +85,18 @@ export default function Library() {
       `.${styles.saved__wrapper}, .${styles.finished__wrapper}`
     );
 
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      (e.currentTarget as HTMLDivElement).scrollLeft += e.deltaY;
+    };
+
     wrappers.forEach((wrapper) => {
-      wrapper.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        wrapper.scrollLeft += e.deltaY;
-      });
+      (wrapper as HTMLDivElement).addEventListener("wheel", handleWheel);
     });
 
     return () => {
       wrappers.forEach((wrapper) => {
-        wrapper.removeEventListener("wheel", () => {});
+        (wrapper as HTMLDivElement).removeEventListener("wheel", handleWheel);
       });
     };
   }, []);
@@ -219,7 +234,12 @@ export default function Library() {
               Login
             </button>
           </div>
-          {showLogin && <Login onClose={() => setShowLogin(false)} />}
+          {showLogin && (
+            <Login
+              onClose={() => setShowLogin(false)}
+              origin="/library"
+            />
+          )}
         </>
       )}
     </>

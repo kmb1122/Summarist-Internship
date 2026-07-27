@@ -1,6 +1,7 @@
 "use client";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector } from "../redux/hooks";
+import { useDispatch } from "react-redux";
 import { updateLibraryFinished } from "../redux/authSlice";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/app/firebase";
@@ -13,12 +14,12 @@ import { useAudio } from "../context/audioContext";
 
 export default function AudioPlayer() {
   const { book } = useAudio();
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,24 +49,24 @@ export default function AudioPlayer() {
   }, [book]);
 
   const playAudio = () => {
-    audioRef.current.play();
+    audioRef.current?.play();
     setIsPlaying(true);
   };
 
   const pauseAudio = () => {
-    audioRef.current.pause();
+    audioRef.current?.pause();
     setIsPlaying(false);
   };
 
   const skipForward = () => {
-    audioRef.current.currentTime += 10;
+    if (audioRef.current) audioRef.current.currentTime += 10;
   };
 
   const skipBackward = () => {
-    audioRef.current.currentTime -= 10;
+    if (audioRef.current) audioRef.current.currentTime -= 10;
   };
 
-  const formatTime = (sec) => {
+  const formatTime = (sec: number) => {
     if (!sec || isNaN(sec)) return "00:00";
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
@@ -185,10 +186,10 @@ export default function AudioPlayer() {
           value={currentTime}
           step="0.1"
           className={styles.audio__slider}
-          style={{ "--progress-percent": `${progressPercent}%` }}
+          style={{ "--progress-percent": `${progressPercent}%` } as React.CSSProperties}
           onChange={(e) => {
             const newTime = Number(e.target.value);
-            audioRef.current.currentTime = newTime;
+            if (audioRef.current) audioRef.current.currentTime = newTime;
             setCurrentTime(newTime);
           }}
         />

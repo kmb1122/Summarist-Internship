@@ -2,13 +2,19 @@
 
 interface Book {
   id: string;
+  tags: Array<string>;
+  type: string;
   title: string;
   author: string;
   subTitle: string;
   summary: string;
+  keyIdeas: number;
   imageLink: string;
   audioLink: string;
+  totalRating: number;
   averageRating: number;
+  bookDescription: string;
+  authorDescription: string;
   subscriptionRequired: boolean;
 }
 
@@ -20,11 +26,12 @@ import { HiOutlineLightBulb } from "react-icons/hi";
 import { AiOutlineRead } from "react-icons/ai";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { useParams, useRouter } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { db } from "@/app/firebase";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import Login from "@/app/components/login";
 import { updateLibrarySaved } from "@/app/redux/authSlice";
+import { useAppSelector } from "@/app/redux/hooks";
 
 export default function Book() {
   const params = useParams();
@@ -34,15 +41,9 @@ export default function Book() {
   const [duration, setDuration] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const user = useSelector((state) => state.auth.user);
-  const isGuest = useSelector((state) => state.auth.isGuest);
+  const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!user || isGuest) return;
-    if (!user.subscriptionPlan) return;
-  }, [user, isGuest]);
 
   useEffect(() => {
     async function fetchBook() {
@@ -72,7 +73,7 @@ export default function Book() {
     loadDuration();
   }, [book]);
 
-  async function getAudioDuration(url) {
+  async function getAudioDuration(url: string) {
     return new Promise((resolve) => {
       const audio = document.createElement("audio");
       audio.src = url;
@@ -82,27 +83,12 @@ export default function Book() {
     });
   }
 
-  const formatTime = (sec) => {
+  const formatTime = (sec: number) => {
     if (!sec || isNaN(sec)) return "00:00";
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
-
-  useEffect(() => {
-    if (!user || isGuest || !id) return;
-
-    async function checkSaved() {
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-      const saved = snap.data()?.librarySaved || [];
-      const isBookSaved = saved.some((b) => b.id === id);
-
-      setIsSaved(isBookSaved);
-    }
-
-    checkSaved();
-  }, [user, isGuest, id]);
 
   async function toggleSave() {
     if (!user) {
@@ -110,13 +96,9 @@ export default function Book() {
       return;
     }
 
-    if (isGuest) {
-      setIsSaved(!isSaved);
-      return;
-    }
+    const userRef = doc(db, "users", user!.uid);
 
-    const userRef = doc(db, "users", user.uid);
-
+    if (!book) return null;
     const bookData = {
       id: book.id,
       title: book.title,
@@ -152,8 +134,10 @@ export default function Book() {
       setIsSaved(true);
     }
   }
-
+  
   function handleReadClick() {
+    if (!book) return null;
+
     if (!user) {
       setShowLogin(true);
       return;
@@ -168,6 +152,8 @@ export default function Book() {
   }
 
   function handleListenClick() {
+    if (!book) return null;
+
     if (!user) {
       setShowLogin(true);
       return;
@@ -285,6 +271,7 @@ export default function Book() {
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
+          origin="/book[id]"
         />
       )}
     </>
