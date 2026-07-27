@@ -64,17 +64,24 @@ export default function Book() {
   }, [id]);
 
   useEffect(() => {
+    if (!user || !book) return;
+
+    const alreadySaved = user.librarySaved?.some(saved => saved.id === book.id);
+    setIsSaved(alreadySaved);
+  }, [user, book]);
+
+  useEffect(() => {
     async function loadDuration() {
       if (!book || !book.audioLink) return;
       const dur = await getAudioDuration(book.audioLink);
-      setDuration(duration);
+      setDuration(dur);
     }
 
     loadDuration();
   }, [book]);
 
-  async function getAudioDuration(url: string) {
-    return new Promise((resolve) => {
+  async function getAudioDuration(url: string): Promise<number> {
+    return new Promise<number>((resolve) => {
       const audio = document.createElement("audio");
       audio.src = url;
       audio.preload = "metadata";
