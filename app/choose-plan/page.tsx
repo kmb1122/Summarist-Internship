@@ -48,6 +48,28 @@ export default function ChoosePlan() {
     );
   }
 
+    async function handleStart() {
+    if (!selectedPlan) return;
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ plan: selectedPlan }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+    }
+  }
+
   return (
     <>
       <div className={styles.header__wrapper}>
@@ -129,11 +151,15 @@ export default function ChoosePlan() {
               </div>
             </div>
             <div className={styles.plan__card}>
-              <button className={`btn ${styles.start__btn}`}>
-                {isYearly && "Start your free 7-day trial"}
-                {isMonthly && "Start your first month"}
-                {!selectedPlan && "Choose a plan"}
-              </button>
+            <button
+              className={`btn ${styles.start__btn}`}
+              onClick={handleStart}
+              disabled={!selectedPlan}
+            >
+              {isYearly && "Start your free 7-day trial"}
+              {isMonthly && "Start your first month"}
+              {!selectedPlan && "Choose a plan"}
+            </button>
               <p className={styles.plan__cardText}>
                 {isYearly &&
                   "Cancel your trial at any time before it ends, and you won't be charged."}
